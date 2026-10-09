@@ -7,7 +7,8 @@ The golden file names the parity tool (whisper_transcribe, ...), its request
 flags, the language each clip language is sent with (a user with that main
 language), and optionally the flags Voxt adds for clips past some duration.
 A flag given as {"model": repo} is that provisioned model's directory. Every
-corpus clip is transcribed, one tool run per language sent and length, and
+corpus clip (or, with clips_over_seconds, every clip longer than that) is
+transcribed, one tool run per language sent and length, and
 each clip's text, language, token count and finish reason must equal the
 golden file. Word, character and mixed error rates are reported next to the
 original Voxt backend's (Swift on MLX Audio) as a summary; they do not gate.
@@ -91,6 +92,7 @@ def main() -> None:
             json.loads,
             (CI_DIRECTORY / "corpus" / "manifest.jsonl").read_text().splitlines(),
         )
+        if row["duration"] > golden.get("clips_over_seconds", 0)
     }
     command = [
         str(arguments.runtime_bin / golden["tool"]),
